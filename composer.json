@@ -15,13 +15,23 @@
         "vendor-dir": "Packages/Libraries",
         "bin-dir": "bin"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/langeland/Langeland.Liquid"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/langeland/Surf"
+        }
+    ],
     "require": {
         "neos/flow": "~4.0.0",
         "neos/welcome": "~4.0.0"
     },
     "require-dev": {
         "neos/kickstarter": "~4.0.0",
-        "typo3/surf": "0.9.0"
+        "typo3/surf": "dev-master"
     },
     "replace": {
         "typo3/flow-base-distribution": "self.version"
