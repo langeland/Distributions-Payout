@@ -14,36 +14,28 @@ $application->setDeploymentPath('/home/hostroot/sites/langeland/payout');
 $application->setOption('keepReleases', 2);
 $deployment->addApplication($application);
 
+
 $workflow = new SimpleWorkflow();
 $workflow->setEnableRollback(TRUE);
 
-// Prevent local Settings.yaml from being transferred
-$workflow->defineTask('typo3.surf:shell:removeLocalConfiguration',
-    'typo3.surf:shell',
-    array('command' => 'cd "{releasePath}" && rm -f Configuration/Settings.yaml')
-);
-$workflow->beforeStage('migrate', array('typo3.surf:shell:removeLocalConfiguration'), $application);
 
-// Remove resource links since they're absolute symlinks to previous releases (will be generated again automatically)
-$workflow->defineTask('typo3.surf:shell:unsetResourceLinks',
-    'typo3.surf:shell',
-    array('command' => 'cd {releasePath} && rm -rf Web/_Resources/Persistent/*(N)')
-);
-$workflow->beforeStage('switch', array('typo3.surf:shell:unsetResourceLinks'), $application);
-
-$workflow->afterStage('switch', 'typo3.surf:typo3:flow:publishresources', $application);
-
-// Clear PHP 5.5+ OpCache (required for php-fpm)
-//$resetScriptFilename = 'surf-opcache-reset-' . uniqid() . '.php';
-//$workflow->defineTask('fn:clearopcache',
-//	'typo3.surf:shell',
-//	array('command' => 'cd {currentPath}/Web && echo "<?php if (function_exists(\"opcache_reset\")) { opcache_reset(); } @unlink(__FILE__); echo \"cache cleared\";" > ' . $resetScriptFilename . ' && curl -s "http://kmcpr-live.lombard.pil.dk/' . $resetScriptFilename . '" && rm -rf ' . $resetScriptFilename)
+//Prevent local Settings . yaml from being transferred
+//$workflow->defineTask(
+//    'removeLocalConfiguration',
+//    'TYPO3\\Surf\\Task\\ShellTask',
+//    array(
+//        'command' => 'cd "{releasePath}" && rm -f Configuration/Settings.yaml'
+//    )
 //);
-//$workflow->afterStage('switch', array('fn:clearopcache'), $application);
+//
+//$workflow->beforeStage('migrate', array('removeLocalConfiguration'), $application);
+
+
+
 
 $deployment->setWorkflow($workflow);
 
-$deployment->onInitialize(function() use ($workflow, $application) {
+$deployment->onInitialize(function () use ($workflow, $application) {
     $workflow->setTaskOptions('typo3.surf:generic:createDirectories', array('directories' => array('shared/Data/Web/_Resources', 'shared/Data/Session')));
     $workflow->setTaskOptions('typo3.surf:generic:createSymlinks', array(
         'symlinks' => array(
