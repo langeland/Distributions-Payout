@@ -1,0 +1,13 @@
+#                                                                        #
+# Default routes configuration for the Welcome package                   #
+#                                                                        #
+
+-
+  name: 'Payout API'
+  uriPattern: 'api/{@action}(.{@format})'
+  defaults:
+    '@package':    'Langeland.Payout'
+    '@controller': 'Api'
+    '@format':     'html'
+
+

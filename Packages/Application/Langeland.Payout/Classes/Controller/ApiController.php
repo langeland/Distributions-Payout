@@ -12,6 +12,12 @@ use Neos\Flow\Mvc\Controller\ActionController;
 
 class ApiController extends ActionController
 {
+    /**
+     * @var string
+     */
+    protected $viewFormatToObjectNameMap = array(
+        'json' => 'Neos\Flow\Mvc\View\JsonView'
+    );
 
     /**
      * @var AccountRepository
@@ -20,13 +26,20 @@ class ApiController extends ActionController
     protected $accountRepository;
 
     /**
+     * @var integer
+     * @Flow\InjectConfiguration(path="withdraw.amount")
+     */
+    protected $withdrawAmount;
+
+    /**
+     * @param string $card
+     * @param int|null $amount
      * @return void
      */
     public function withdrawAction($card, $amount = null)
     {
         /** @var Account $account */
-        $account = $this->accountRepository->findByCard($card);
-
+        $account = $this->accountRepository->findOneByCard($card);
         if (is_null($account)) {
             $return = array(
                 'message' => 'Card not found, adding card',
@@ -36,23 +49,27 @@ class ApiController extends ActionController
             $newAccount = new Account();
             $newAccount
                 ->setCard($card)
-                ->setBalance(0);
-
+                ->setBalance(10);
             $this->accountRepository->add($newAccount);
 
         } else {
-            $return = array(
-                'message' => 'Here is your money',
-                'status' => 200,
-                'amount' => $account->getBalance()
-            );
-            $account->setBalance(0);
-
+            if ($account->getBalance() - $this->withdrawAmount >= 0) {
+                $return = array(
+                    'message' => sprintf('Here is your money, you got %s remaining.', $account->getBalance() - $this->withdrawAmount),
+                    'status' => 200,
+                    'amount' => $this->withdrawAmount
+                );
+                $account->setBalance($account->getBalance() - $this->withdrawAmount);
+            } else {
+                $return = array(
+                    'message' => sprintf('Nope !! You spent it all.'),
+                    'status' => 200,
+                    'amount' => 0
+                );
+                $account->setBalance(10);
+            }
             $this->accountRepository->update($account);
         }
-
-
-        $this->view->assign('return', $return);
+        $this->view->assign('value', $return);
     }
-
 }

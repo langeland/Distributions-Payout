@@ -1,0 +1,22 @@
+#                                                                        #
+# Example Settings                                                       #
+#                                                                        #
+# This file contains settings for various parts of the application.      #
+# Copy this file to Settings.yaml, and adjust as necessary.              #
+#                                                                        #
+# Please refer to the default settings file(s) or the manuals for        #
+# possible configuration options.                                        #
+#                                                                        #
+
+Neos:
+  Flow:
+    persistence:
+      backendOptions:
+       # if you want to log executed SQL queries, enable the next 2 lines
+#      doctrine:
+#        sqlLogger: 'Neos\Flow\Persistence\Doctrine\Logging\SqlLogger'
+
+    mvc:
+      routes:
+        'Neos.Flow':
+          position: 'end'

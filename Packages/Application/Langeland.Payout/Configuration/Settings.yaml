@@ -1,0 +1,12 @@
+Langeland:
+  Payout:
+    withdraw:
+      amount: 2
+
+Neos:
+  Flow:
+    persistence:
+    mvc:
+      routes:
+        'Langeland.Payout':
+          position: 'start'
