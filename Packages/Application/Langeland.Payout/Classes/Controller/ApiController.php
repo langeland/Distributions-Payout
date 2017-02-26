@@ -43,20 +43,22 @@ class ApiController extends ActionController
         if (is_null($account)) {
             $return = array(
                 'message' => 'Card not found, adding card',
-                'status' => 404
+                'status' => 404,
+                'balance' => 0,
+                'amount' => 0
             );
 
             $newAccount = new Account();
             $newAccount
                 ->setCard($card)
-                ->setBalance(10);
+                ->setBalance(0);
             $this->accountRepository->add($newAccount);
-
         } else {
             if ($account->getBalance() - $this->withdrawAmount >= 0) {
                 $return = array(
                     'message' => sprintf('Here is your money, you got %s remaining.', $account->getBalance() - $this->withdrawAmount),
                     'status' => 200,
+                    'balance' => $account->getBalance() - $this->withdrawAmount,
                     'amount' => $this->withdrawAmount
                 );
                 $account->setBalance($account->getBalance() - $this->withdrawAmount);
@@ -64,9 +66,9 @@ class ApiController extends ActionController
                 $return = array(
                     'message' => sprintf('Nope !! You spent it all.'),
                     'status' => 200,
+                    'balance' => 0,
                     'amount' => 0
                 );
-                $account->setBalance(10);
             }
             $this->accountRepository->update($account);
         }
